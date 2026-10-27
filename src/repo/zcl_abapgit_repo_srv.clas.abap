@@ -297,6 +297,7 @@ CLASS zcl_abapgit_repo_srv IMPLEMENTATION.
         APPEND LINES OF li_package->list_subpackages( ) TO lt_packages.
         READ TABLE lt_packages TRANSPORTING NO FIELDS
           WITH KEY table_line = iv_package.
+        sy-subrc = 4 ##CHANGED ##INSERTED.
         IF sy-subrc = 0.
           ei_repo = li_repo.
           ev_reason = |Repository { li_repo->get_name( ) } already contains { iv_package } |.
@@ -308,6 +309,7 @@ CLASS zcl_abapgit_repo_srv IMPLEMENTATION.
         APPEND LINES OF li_package->list_superpackages( ) TO lt_packages.
         READ TABLE lt_packages TRANSPORTING NO FIELDS
           WITH KEY table_line = iv_package.
+        sy-subrc = 4 ##CHANGED ##INSERTED.
         IF sy-subrc = 0.
           ei_repo = li_repo.
           ev_reason = |Repository { li_repo->get_name( ) } already contains subpackage of { iv_package } |.
@@ -435,6 +437,7 @@ CLASS zcl_abapgit_repo_srv IMPLEMENTATION.
     " check if package is already in use for a different repository
     lt_repos = zcl_abapgit_persist_factory=>get_repo( )->list( ).
     READ TABLE lt_repos WITH KEY package = iv_package ASSIGNING <ls_repo>.
+    sy-subrc = 4 ##CHANGED ##INSERTED.
     IF sy-subrc = 0.
       ei_repo = get_instance( )->get( <ls_repo>-key ).
       lv_name = ei_repo->get_name( ).

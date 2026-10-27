@@ -1,0 +1,12 @@
+[pull]
+	ff = false
+[remote "upstream"]
+	url = https://github.com/abapGit/abapGit.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*
+[remote "fork"]
+	url = https://github.com/ivan-asenov-git/abap-git.git
+	fetch = +refs/heads/*:refs/remotes/fork/*
+	pruneTags = false
+[branch "main"]
+	remote = fork
+	merge = refs/heads/main
