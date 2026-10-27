@@ -152,6 +152,12 @@ CLASS zcl_abapgit_gui_page_repo_view DEFINITION
         VALUE(ro_tag_dropdown) TYPE REF TO zcl_abapgit_html_toolbar
       RAISING
         zcx_abapgit_exception .
+    METHODS build_patch_dropdown
+      RETURNING
+        VALUE(ro_patch_dropdown) TYPE REF TO zcl_abapgit_html_toolbar .
+    METHODS build_diff_dropdown
+      RETURNING
+        VALUE(ro_diff_dropdown) TYPE REF TO zcl_abapgit_html_toolbar .
     METHODS build_advanced_dropdown
       RETURNING
         VALUE(ro_advanced_dropdown) TYPE REF TO zcl_abapgit_html_toolbar
@@ -456,10 +462,10 @@ CLASS zcl_abapgit_gui_page_repo_view IMPLEMENTATION.
 
       IF mo_repo_aggregated_state->is_unchanged( ) = abap_false. " Any changes
         ro_toolbar->add( iv_txt = 'Patch'
-                         iv_act = |{ zif_abapgit_definitions=>c_action-go_patch }?key={ mv_key }|
+                         io_sub = build_patch_dropdown( )
                          iv_opt = zif_abapgit_html=>c_html_opt-strong ).
         ro_toolbar->add( iv_txt = 'Diff'
-                         iv_act = |{ zif_abapgit_definitions=>c_action-go_repo_diff }?key={ mv_key }|
+                         io_sub = build_diff_dropdown( )
                          iv_opt = zif_abapgit_html=>c_html_opt-strong ).
       ENDIF.
       li_log = mi_repo->get_log( ).
@@ -547,6 +553,32 @@ CLASS zcl_abapgit_gui_page_repo_view IMPLEMENTATION.
         iv_hint  = |Original system: { is_item-srcsystem }|
         iv_class = 'cursor-pointer' ).
     ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD build_diff_dropdown.
+
+    CREATE OBJECT ro_diff_dropdown.
+
+    ro_diff_dropdown->add( iv_txt = 'All Changes'
+                           iv_act = |{ zif_abapgit_definitions=>c_action-go_repo_diff }?key={ mv_key }| ).
+    ro_diff_dropdown->add( iv_txt   = 'My Changes'
+                           iv_title = 'Diff only your own changes'
+                           iv_act   = |{ zif_abapgit_definitions=>c_action-go_repo_diff_me }?key={ mv_key }| ).
+
+  ENDMETHOD.
+
+
+  METHOD build_patch_dropdown.
+
+    CREATE OBJECT ro_patch_dropdown.
+
+    ro_patch_dropdown->add( iv_txt = 'All Changes'
+                            iv_act = |{ zif_abapgit_definitions=>c_action-go_patch }?key={ mv_key }| ).
+    ro_patch_dropdown->add( iv_txt   = 'My Changes'
+                            iv_title = 'Patch only the objects you changed'
+                            iv_act   = |{ zif_abapgit_definitions=>c_action-go_patch_me }?key={ mv_key }| ).
 
   ENDMETHOD.
 
@@ -1225,6 +1257,11 @@ CLASS zcl_abapgit_gui_page_repo_view IMPLEMENTATION.
     ls_hotkey_action-description = |Patch|.
     ls_hotkey_action-action = zif_abapgit_definitions=>c_action-go_patch.
     ls_hotkey_action-hotkey = |a|.
+    INSERT ls_hotkey_action INTO TABLE rt_hotkey_actions.
+
+    ls_hotkey_action-description = |Patch My Changes|.
+    ls_hotkey_action-action = zif_abapgit_definitions=>c_action-go_patch_me.
+    ls_hotkey_action-hotkey = |m|.
     INSERT ls_hotkey_action INTO TABLE rt_hotkey_actions.
 
     ls_hotkey_action-description   = |Diff|.
