@@ -1,5 +1,3 @@
-[pull]
-	ff = false
 [remote "upstream"]
 	url = https://github.com/abapGit/abapGit.git
 	fetch = +refs/heads/*:refs/remotes/upstream/*
